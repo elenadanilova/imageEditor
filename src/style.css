@@ -2,34 +2,34 @@ body {
     font: 12px Arial, sans-serif;
 }
 
-#dropZone {    
+#dropTarget {    
     color: #555;
     font-size: 18px;
     text-align: center;    
-    
-    width: 400px;
-    padding: 50px 0;
-    margin: 50px auto;
-    
-    background: #eee;
-    border: 1px solid #ccc;
-    
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
+	
+	background-color: #c8dadf;
+	padding: 100px 20px;
+	box-sizing: border-box;
+	width: 100%;
+	
+	outline: 2px dashed #92b0b3;
+	outline-offset: -10px;
+	
+	-webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
+	transition: outline-offset .15s ease-in-out, background-color .15s linear;	
 }
 
-#dropZone.hover {
+#dropTarget.hover {
     background: #ddd;
     border-color: #aaa;
 }
 
-#dropZone.error {
+#dropTarget.error {
     background: #faa;
     border-color: #f00;
 }
 
-#dropZone.drop {
+#dropTarget.drop {
     background: #afa;
     border-color: #0f0;
 }
