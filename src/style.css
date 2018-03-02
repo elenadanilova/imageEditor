@@ -2,7 +2,7 @@ body {
     font: 12px Arial, sans-serif;
 }
 
-#dropTarget {    
+.imageEditor{
     color: #555;
     font-size: 18px;
     text-align: center;    
@@ -17,19 +17,4 @@ body {
 	
 	-webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
 	transition: outline-offset .15s ease-in-out, background-color .15s linear;	
-}
-
-#dropTarget.hover {
-    background: #ddd;
-    border-color: #aaa;
-}
-
-#dropTarget.error {
-    background: #faa;
-    border-color: #f00;
-}
-
-#dropTarget.drop {
-    background: #afa;
-    border-color: #0f0;
 }

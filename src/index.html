@@ -1,19 +1,27 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-    
-  <title>Image Editor</title>  
-  <link rel="stylesheet" href="style.css">
-    
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
-  <script src="script.js"></script>
-</head>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Image Editor</title>
+    <link rel="stylesheet" href="style.css" type="text/css" />
 
+</head>
 <body>
-    
-	<div id="dropTarget">Drop some files here</div>
-	<output id="filesInfo"></output>
-  
+
+	<script src="script.js"></script>
+
+	<div class="imageEditor" id="imageEditor"></div>
+	
+	<script type="text/javascript">
+		window.onload = function() {			
+			options = {
+				ratio: '1',
+				dropZone: 'imageEditor'
+			}
+			var editor = new imageEditor(options);
+			editor.addDragEvents();	
+		};
+	</script>
+
 </body>
 </html>
