@@ -2,19 +2,61 @@ body {
     font: 12px Arial, sans-serif;
 }
 
-.imageEditor{
+.imageEditor {
     color: #555;
     font-size: 18px;
     text-align: center;    
 	
 	background-color: #c8dadf;
-	padding: 100px 20px;
+	background-image: url(upload.svg);
+	background-position: 50% 40%;
+	background-repeat: no-repeat;
+	background-size: auto 28%;
+	
+	padding-top: 140px;
+	padding-bottom: 20px;
+	padding-left: 20px;
+	padding-right: 20px;
+	
 	box-sizing: border-box;
-	width: 100%;
+	width: 400px;
+	max-height: 300px;	
+	min-height: 200px;
 	
 	outline: 2px dashed #92b0b3;
 	outline-offset: -10px;
 	
 	-webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
 	transition: outline-offset .15s ease-in-out, background-color .15s linear;	
+}
+
+.imagePreview {
+	display: none;
+	max-width: 100%; 
+	max-height: 100%;
+	position: relative;	
+}
+
+.imageEditorInput {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;	
+	z-index: -1;
+}
+
+.imageEditorLabel {
+	font-size: 16px;	
+	cursor: pointer;
+	color: #0f3c4b;
+	font-family: Metropolis,Avenir Next,Helvetica Neue,Arial,sans-serif;	
+}
+
+.editorLabelClick {
+	font-weight: 700;
+}
+
+.editorLabelClick:hover {
+	color: #39bfd3;;
 }

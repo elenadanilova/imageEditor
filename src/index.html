@@ -10,16 +10,25 @@
 
 	<script src="script.js"></script>
 
-	<div class="imageEditor" id="imageEditor"></div>
+	<div class="imageEditor" id="imageEditor">
+		<img class="imagePreview" id="imagePreview" src=""/>
+		<input type="file" name="imageEditorInput" class="imageEditorInput" id="imageEditorInput" accept="image/*">
+		<label for="imageEditorInput" class="imageEditorLabel" id="imageEditorLabel">
+			<span class="editorLabelClick">Выберите изображение</span> или перетащите сюда
+		</label>
+	</div>
 	
 	<script type="text/javascript">
 		window.onload = function() {			
 			options = {
 				ratio: '1',
-				dropZone: 'imageEditor'
+				dropZone: 'imageEditor',
+				previewZone: 'imagePreview',
+				inputZone: 'imageEditorInput',
+				labelZone: 'imageEditorLabel'
 			}
 			var editor = new imageEditor(options);
-			editor.addDragEvents();	
+			editor.addEditorEvents();	
 		};
 	</script>
 
