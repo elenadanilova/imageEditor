@@ -5,7 +5,7 @@
 src/
 ├── imageEditor.css
 ├── imageEditor.js     
-└── img
+└── upload.svg
 ```
 ## Getting started
 ### Installation
