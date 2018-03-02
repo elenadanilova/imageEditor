@@ -1,5 +1,5 @@
 # imageEditor.js
->A simple JavaScript image drag and drop, upload and cropping plugin. As of v1.0.0, the core code of imageEditor is replaced with imageEditor.js.
+>A simple JavaScript image drag and drop, upload and cropping plugin.
 ## Main
 ```text
 src/
