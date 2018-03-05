@@ -10,13 +10,14 @@
 
 	<script src="imageEditor.js"></script>
 
-	<div class="imageEditor" id="imageEditor">
-		<img class="imagePreview" id="imagePreview" src=""/>
+	<div class="imageEditor" id="imageEditor">		
 		<input type="file" name="imageEditorInput" class="imageEditorInput" id="imageEditorInput" accept="image/*">
 		<label for="imageEditorInput" class="imageEditorLabel" id="imageEditorLabel">
 			<span class="editorLabelClick">Выберите изображение</span> или перетащите сюда
-		</label>
+		</label>		
 	</div>
+	<img class="imagePreview" id="imagePreview" src=""/>
+	<canvas id="imageEditorCanvas" class="imageEditorCanvas"></canvas>
 	
 	<script type="text/javascript">
 		window.onload = function() {			
@@ -25,7 +26,10 @@
 				dropZone: 'imageEditor',
 				previewZone: 'imagePreview',
 				inputZone: 'imageEditorInput',
-				labelZone: 'imageEditorLabel'
+				labelZone: 'imageEditorLabel',
+				cropZone: 'imageEditorCanvas',
+				cropZoneW: '500',
+				cropZoneH: '300'
 			}
 			var editor = new imageEditor(options);
 			editor.addEditorEvents();	

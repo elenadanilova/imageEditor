@@ -4,11 +4,15 @@
 'use strict'
 
 function imageEditor(options) {
-	this.ratio = options.ratio;
+	var ratio = options.ratio;
+	var cropZoneW = options.cropZoneW;
+	var cropZoneH = options.cropZoneH;
 	var dropZone = document.getElementById(options.dropZone);
 	var previewZone = document.getElementById(options.previewZone);
 	var inputZone = document.getElementById(options.inputZone);
 	var labelZone = document.getElementById(options.labelZone);
+	var cropZone = document.getElementById(options.cropZone);
+	//console.log(cropZone);
 	
 	this.addEditorEvents = function() {	
 		dropZone.addEventListener('dragover',function(){
@@ -23,7 +27,7 @@ function imageEditor(options) {
 			selectFile(event.dataTransfer.files);
 		},false);		
 		
-		inputZone.addEventListener('change',function(){			
+		inputZone.addEventListener('change',function(){		
 			selectFile(this.files);
 		});
 	}
@@ -39,17 +43,81 @@ function imageEditor(options) {
 				}
 				
 				var reader = new FileReader();
-				reader.onload = function(file) {														
-					dropZone.style.paddingTop = "20px";
-					labelZone.style.display = "none";
-					previewZone.style.display = "block";
+				reader.onload = function(file) {
 					previewZone.src = event.target.result;
-					console.log(previewZone);
-					console.log(dropZone);
+					createCropper(event.target.result);
 				}
-				reader.readAsDataURL(file);
+				reader.readAsDataURL(file);				
 			}
-			
+			hideUpload();
+			showPreview();	
+			//window.setTimeout(createCropper, 2000, "create cropper");	
 		}
+	}
+	
+	var showPreview = function() {
+		previewZone.style.display = "block";
+	}
+	
+	var hidePreview = function() {
+		previewZone.style.display = "none";
+	}
+	
+	var showUpload = function() {
+		dropZone.style.display = "block";
+	}
+	
+	var hideUpload = function() {
+		dropZone.style.display = "none";
+	}
+	
+	var showCropper = function() {
+		cropZone.style.display = "block";
+	}
+	
+	var hideCropper = function() {
+		cropZone.style.display = "hide";
+	}
+	
+	var deleteSelectFile = function() {
+		hidePreview();
+		previewZone.src = "";
+		dropZone.style.paddingTop = "140px";
+		labelZone.style.display = "block";
+	}
+		
+	var createCropper = function(src) {
+		hidePreview(); //убрать
+		showCropper();
+		
+		var context = cropZone.getContext('2d');
+		
+		var	img = new Image();			
+		img.onload = function() {	
+			var i,
+			    w,
+				h;
+			if(img.width>=img.height) {
+				i = img.width/cropZoneW;
+				w = cropZoneW;
+				h = parseInt(img.height/i);				
+			} else {
+				i = img.height/cropZoneH;
+				h = cropZoneH;
+				w = parseInt(img.width/i);				
+			}
+			var sourceX = 100;
+			var sourceY = 0;
+			var sourceW = 175;
+			var sourceH = 150;
+			
+			console.log(i+"  "+w+"  "+h);
+			
+			cropZone.width = w;
+			cropZone.height = h;
+			context.drawImage(img,0,0,w,h);
+		}	
+		img.src = src;	
+			
 	}
 };
