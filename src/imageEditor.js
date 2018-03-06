@@ -97,21 +97,16 @@ function imageEditor(options) {
 			var i,
 			    w,
 				h;
-			if(img.width>=img.height) {
+			if(img.height/img.width<=cropZoneH/cropZoneW) {
 				i = img.width/cropZoneW;
 				w = cropZoneW;
-				h = parseInt(img.height/i);				
+				h = parseInt(img.height/i);			
 			} else {
 				i = img.height/cropZoneH;
 				h = cropZoneH;
-				w = parseInt(img.width/i);				
+				w = parseInt(img.width/i);			
 			}
-			var sourceX = 100;
-			var sourceY = 0;
-			var sourceW = 175;
-			var sourceH = 150;
-			
-			console.log(i+"  "+w+"  "+h);
+			//console.log(i+"  "+w+"  "+h);
 			
 			cropZone.width = w;
 			cropZone.height = h;
