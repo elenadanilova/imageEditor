@@ -7,32 +7,32 @@
 
 </head>
 <body>
-
 	<script src="imageEditor.js"></script>
 
 	<div class="imageEditor" id="imageEditor">		
-		<input type="file" name="imageEditorInput" class="imageEditorInput" id="imageEditorInput" accept="image/*">
-		<label for="imageEditorInput" class="imageEditorLabel" id="imageEditorLabel">
-			<span class="editorLabelClick">Выберите изображение</span> или перетащите сюда
-		</label>		
-	</div>
-	<img class="imagePreview" id="imagePreview" src=""/>
-	<canvas id="imageEditorCanvas" class="imageEditorCanvas"></canvas>
+		<div class="imageEditorDrop" id="imageEditorDrop">
+			<input type="file" name="imageEditorInput" class="imageEditorInput" id="imageEditorInput" accept="image/*">
+			<label for="imageEditorInput" class="imageEditorLabel" id="imageEditorLabel">
+				<span class="editorLabelLink">Выберите изображение</span> или перетащите сюда
+			</label>	
+		</div>
+			
+		<canvas id="imageEditorCanvas" class="imageEditorCanvas"></canvas>	
+	</div>	
 	
 	<script type="text/javascript">
-		window.onload = function() {			
+		window.onload = function() {
 			options = {
-				ratio: '1',
-				dropZone: 'imageEditor',
-				previewZone: 'imagePreview',
+				editorZone: 'imageEditor',
+				dropZone: 'imageEditorDrop',
 				inputZone: 'imageEditorInput',
-				labelZone: 'imageEditorLabel',
 				cropZone: 'imageEditorCanvas',
 				cropZoneW: '500',
 				cropZoneH: '300'
 			}
-			var editor = new imageEditor(options);
-			editor.addEditorEvents();	
+			var editor = new imgEditor(options);
+			editor.addDropEvents();
+			editor.addInputEvents();
 		};
 	</script>
 

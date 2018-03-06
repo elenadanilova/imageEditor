@@ -3,6 +3,10 @@ body {
 }
 
 .imageEditor {
+	margin: 0 auto;
+}
+
+.imageEditorDrop {
     color: #555;
     font-size: 18px;
     text-align: center;    
@@ -16,12 +20,10 @@ body {
 	padding-top: 200px;
 	padding-bottom: 20px;
 	padding-left: 20px;
-	padding-right: 20px;
-	
-	margin: 0 auto;
+	padding-right: 20px;	
 	
 	box-sizing: border-box;
-	width: 400px;
+	width: 500px;
 	height: 300px;
 	
 	outline: 2px dashed #92b0b3;
@@ -31,12 +33,6 @@ body {
 	transition: outline-offset .15s ease-in-out, background-color .15s linear;	
 }
 
-.imagePreview {
-	display: none;
-	max-width: 400px;	
-	max-height: 200px;
-	position: relative;	
-}
 
 .imageEditorInput {
 	width: 0.1px;
@@ -55,7 +51,7 @@ body {
 	font-family: Metropolis,Avenir Next,Helvetica Neue,Arial,sans-serif;	
 }
 
-.editorLabelClick {
+.editorLabelLink {
 	font-weight: 700;
 }
 
@@ -64,7 +60,6 @@ body {
 }
 
 .imageEditorCanvas {
-	display: none;
-	margin: 0 auto;
+	display: none;	
 	border: 1px solid;
 }
