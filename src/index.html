@@ -5,34 +5,84 @@
     <title>Image Editor</title>
     <link rel="stylesheet" href="imageEditor.css" type="text/css" />
 
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="jquery.imgareaselect.pack.js"></script>
+	
 </head>
 <body>
 	<script src="imageEditor.js"></script>
-
-	<div class="imageEditor" id="imageEditor">		
-		<div class="imageEditorDrop" id="imageEditorDrop">
-			<input type="file" name="imageEditorInput" class="imageEditorInput" id="imageEditorInput" accept="image/*">
-			<label for="imageEditorInput" class="imageEditorLabel" id="imageEditorLabel">
-				<span class="editorLabelLink">Выберите изображение</span> или перетащите сюда
-			</label>	
-		</div>
+		
+		<div class="imageEditor" id="imageEditor">	
+			<div id="imageEditorControls" class="imageEditorControls">			
+				<button id="editorBtnCrop">Вырезать</button>
+				<button id="editorBtnCancel" style="display:none;">Отмена</button>
+				<button id="editorBtnDelete">Удалить</button>				
+			</div>
 			
-		<canvas id="imageEditorCanvas" class="imageEditorCanvas"></canvas>	
-	</div>	
+			<div class="imageEditorDrop" id="imageEditorDrop">
+				<input type="file" name="imageEditorInput" class="imageEditorInput" id="imageEditorInput" accept="image/*">
+				<label for="imageEditorInput" class="imageEditorLabel" id="imageEditorLabel">
+					<span class="editorLabelLink">Выберите изображение</span> или перетащите сюда
+				</label>	
+			</div>
+			
+			<img id="imageEditorImg" class="imageEditorImg" src=""/>
+			<img id="imageEditorPreview" class="imageEditorPreview" src=""/>
+			<canvas id="imageEditorCanvas" class="imageEditorCanvas"></canvas>			
+		</div>	
 	
 	<script type="text/javascript">
-		window.onload = function() {
-			options = {
-				editorZone: 'imageEditor',
-				dropZone: 'imageEditorDrop',
-				inputZone: 'imageEditorInput',
-				cropZone: 'imageEditorCanvas',
-				cropZoneW: '500',
-				cropZoneH: '300'
-			}
-			var editor = new imgEditor(options);
-			editor.addDropEvents();
-			editor.addInputEvents();
+		window.onload = function() {			
+			$(document).ready(function () {
+				
+				options = {
+					editorZone: 'imageEditor',
+					controlsZone: 'imageEditorControls',
+					dropZone: 'imageEditorDrop',
+					inputZone: 'imageEditorInput',
+					cropZone: 'imageEditorCanvas',
+					imageZone: 'imageEditorImg',
+					previewZone: 'imageEditorPreview'
+				}
+				var editor = new imgEditor(options);
+				document.getElementById("imageEditorDrop").ondragover = function() {
+					editor.addDragoverEvents(event);
+				}
+				document.getElementById("imageEditorDrop").ondrop = function() {
+					editor.addDropEvents(event);
+					imgAS.setSelection(10,10,60,60);
+					imgAS.setOptions({ show : true });
+					imgAS.update();
+				}
+				document.getElementById("imageEditorInput").onchange = function() {
+					editor.addInputEvents(this);
+				}
+				
+				var imgAS = $('img#imageEditorImg').imgAreaSelect({
+					handles: true,				
+					aspectRatio: "2:1",
+					instance: true,
+					
+					onSelectEnd: function (img, selection) {
+						editor.updateSelection(selection.x1, selection.y1, selection.width, selection.height);
+					}
+				});	
+
+				document.getElementById("editorBtnCrop").onclick = function() {												
+					editor.getData();
+					imgAS.cancelSelection();
+				}				
+				document.getElementById("editorBtnDelete").onclick = function() {
+					imgAS.cancelSelection();
+					editor.deleteImg();							
+				}
+				document.getElementById("editorBtnCancel").onclick = function() {
+					editor.cancelCrop();
+					document.getElementById("editorBtnCancel").style.display = 'none';					
+					/*imgAS.setOptions({ show : true, x1 : 10, y1 : 10 });
+					imgAS.update();*/
+				}
+			});
 		};
 	</script>
 

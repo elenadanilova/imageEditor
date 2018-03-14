@@ -6,39 +6,82 @@ var imgEditor = function(options){
     var options = options,	
     obj =
     {
-        state : {},
-		click : false,
-		resize : false,
-		downPointX: 0,
-		downPointY: 0,
-		lastPointX: 0,
-		lastPointY: 0,
+		selectionX: 0,
+		selectionY: 0,
+		selectionW: 0,
+		selectionH: 0,
 		ctx : '',
         ratio : 1,
         options : options,
         editorZone : document.getElementById(options.editorZone),
+		controlsZone : document.getElementById(options.controlsZone),
 		dropZone : document.getElementById(options.dropZone),
-		inputZone: document.getElementById(options.inputZone),
-		cropZone: document.getElementById(options.cropZone),
+		inputZone : document.getElementById(options.inputZone),
+		cropZone : document.getElementById(options.cropZone),
+		imageZone : document.getElementById(options.imageZone),
+		previewZone : document.getElementById(options.previewZone),
         img : new Image(),
-		addDropEvents: function() {
-			this.dropZone.addEventListener('dragover',function(){
-				event.preventDefault();
-				event.stopPropagation();
-				event.dataTransfer.dropEffect = 'copy';
-			},false);
-			
-			this.dropZone.addEventListener('drop',function(){
-				event.preventDefault();
-				event.stopPropagation();
-				selectFile(event.dataTransfer.files);
-			},false);
+		addDropEvents: function(event) {
+			event.preventDefault();
+			event.stopPropagation();
+			selectFile(event.dataTransfer.files);
 		},
-		addInputEvents: function() {
-			this.inputZone.addEventListener('change',function(){
-				selectFile(this.files);
-			});
-		}	
+		addDragoverEvents : function (event) {
+				event.preventDefault();
+				event.stopPropagation();
+				event.dataTransfer.dropEffect = 'copy';			
+		},
+		addInputEvents: function(th) {
+				selectFile(th.files);
+		},
+		updateSelection : function(x,y,w,h) {	
+			var ind = this.img.width/document.getElementById("imageEditorImg").width;			
+			this.selectionX = parseInt(ind*x);
+			this.selectionY = parseInt(ind*y);
+			this.selectionW = parseInt(ind*w);
+			this.selectionH = parseInt(ind*h);		
+		},
+		getData : function() {
+			if(this.selectionH>1 & this.selectionW>1) {
+				document.getElementById("editorBtnCancel").style.display = 'inline'
+				document.getElementById("editorBtnCrop").style.display = 'none'
+				this.cropZone.width = this.selectionW;
+				this.cropZone.height = this.selectionH;
+									
+				this.ctx = this.cropZone.getContext('2d');					
+				this.ctx.drawImage(this.img,this.selectionX,this.selectionY,this.selectionW,this.selectionH,0,0,this.selectionW,this.selectionH);			
+				var cropData = this.cropZone.toDataURL("image/png");
+				//this.cropZone.style.display = "block";
+				this.previewZone.src = cropData;
+				hideImageZone();
+				showPreviewZone();				
+			}
+			return cropData;
+		},
+		deleteImg : function() {
+			document.getElementById("editorBtnCrop").style.display = 'inline'			
+			this.img = new Image();
+			this.selectionX = 0;
+			this.selectionY = 0;
+			this.selectionW = 0;
+			this.selectionH = 0;
+			this.ctx = '';
+			this.imageZone.src = '';
+			this.previewZone.src = '';			
+			showDropZone();
+			hideImageZone();
+			hideControlsZone();
+			hidePreviewZone();
+		},
+		cancelCrop : function() {
+			this.selectionX = 0;
+			this.selectionY = 0;
+			this.selectionW = 0;
+			this.selectionH = 0;
+			document.getElementById("editorBtnCrop").style.display = 'inline'
+			showImageZone();
+			hidePreviewZone();
+		}
     },	
 	selectFile = function(files) 
 	{		
@@ -51,52 +94,24 @@ var imgEditor = function(options){
 				}
 				
 				var reader = new FileReader();
-				reader.onload = function(file) {
-					initCanvas(event.target.result);
+				reader.onload = function(file) {	
+					initImg(file.target.result);	
 				}
 				reader.readAsDataURL(file);
+		
 				if (file.type.match('image.*')) {
 					break;
 				}
 			}
 		}
 	},
-	initCanvas = function(src)
+	initImg = function(src)
 	{
-		obj.ctx = obj.cropZone.getContext('2d');			
-		obj.img.onload = function() {	
-			var cropZoneH = obj.options.cropZoneH;
-			var cropZoneW = obj.options.cropZoneW;
-			var i,
-			    w,
-				h;
-			if(obj.img.height/obj.img.width<=cropZoneH/cropZoneW) {
-				i = obj.img.width/cropZoneW;
-				w = cropZoneW;
-				h = parseInt(obj.img.height/i);			
-			} else {
-				i = obj.img.height/cropZoneH;
-				h = cropZoneH;
-				w = parseInt(obj.img.width/i);			
-			}
-			//console.log(i+"  "+w+"  "+h);
-			
-			obj.cropZone.width = w;
-			obj.cropZone.height = h;
-			obj.ctx.drawImage(obj.img,0,0,w,h);
-		}	
+		hideDropZone();
+		showControlsZone();
 		obj.img.src = src;
-		hideDropZone();	
-		showCanvas();	
-		initEventsOnCanvas();
-	},
-	showCanvas = function()
-	{
-		obj.cropZone.style.display = "block";
-	},
-	hideCanvas = function()
-	{
-		obj.cropZone.style.display = "none";
+		document.getElementById("imageEditorImg").src = src;
+		document.getElementById("imageEditorImg").style.display = "block";			
 	},
 	showDropZone = function()
 	{
@@ -106,73 +121,31 @@ var imgEditor = function(options){
 	{
 		obj.dropZone.style.display = "none";
 	},
-	initEventsOnCanvas	= function() {
-		obj.ctx.canvas.addEventListener('mousedown',onMouseDown(event));
-		obj.ctx.canvas.addEventListener('mouseup',onMouseUp(event));
-		
-		        attachEvent(obj.cropZone, 'mousedown', console.log("imgMouseDown"));
-        attachEvent(obj.cropZone, 'mousemove', console.log("imgMouseMove"));
-        attachEvent(document.body, 'mouseup', imgMouseUp);
-        var mousewheel = (/Firefox/i.test(navigator.userAgent))? 'DOMMouseScroll' : 'mousewheel';
-        attachEvent(obj.cropZone, mousewheel, console.log("zoomImage"));
-	},
-	onMouseDown = function(event)
+	showImageZone = function()
 	{
-		console.log("onMouseDown"); //
-		var loc = windowToCanvas(event.clientX, event.clientY);
-		event.preventDefault();
-		obj.click = true;
-		if(!obj.resize) {
-			obj.ctx.canvas.addEventListener('mousemove',onMouseMove(event));
-			obj.downPointX = loc.x;
-			obj.downPointY = loc.y;
-			obj.lastPointX = loc.x;
-			obj.lastPointY = loc.y;
-		}
+		obj.imageZone.style.display = "block";
 	},
-	onMouseUp = function(event) 
+	hideImageZone = function()
 	{
-		console.log("onMouseUp"); //
+		obj.imageZone.style.display = "none";
 	},
-	onMouseMove = function() 
+	showPreviewZone = function()
 	{
-		event.preventDefault();
-		console.log("onMouseMove"); //
-		
+		obj.previewZone.style.display = "block";
 	},
-	windowToCanvas = function(x, y)
+	hidePreviewZone = function()
 	{
-		var canvas = obj.ctx.canvas,
-			bbox = canvas.getBoundingClientRect();
-		return {
-			x: x - bbox.left * (canvas.width / bbox.width),
-			y: y - bbox.top * (canvas.height / bbox.height)
-		};	
+		obj.previewZone.style.display = "none";
+	},	
+	showControlsZone = function()
+	{
+		obj.controlsZone.style.display = "block";
+		document.getElementById("editorBtnCancel").style.display = 'none';
 	},
-	attachEvent = function(node, event, cb)
-    {
-        if (node.attachEvent)
-            node.attachEvent('on'+event, cb);
-        else if (node.addEventListener)
-            node.addEventListener(event, cb);
-    },
-    detachEvent = function(node, event, cb)
-    {
-        if(node.detachEvent) {
-            node.detachEvent('on'+event, cb);
-        }
-        else if(node.removeEventListener) {
-            node.removeEventListener(event, render);
-        }
-    },
-	imgMouseUp = function(e) {
-		if(window.event) e.cancelBubble = true;
-        else e.stopImmediatePropagation();
-		console.log("imgMouseUp");
+	hideControlsZone = function()
+	{
+		obj.controlsZone.style.display = "none";
 	}
-
-	attachEvent(obj.cropZone, 'DOMNodeRemoved', function(){detachEvent(document.body, 'DOMNodeRemoved', imgMouseUp)});
-	
 	
     return obj;
 };
