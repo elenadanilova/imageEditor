@@ -12,9 +12,8 @@
 <body>
 	<script src="lib/imageEditor.js"></script>
 		
-		<div class="imageEditor" id="imageEditor">	
-			
-		</div>	
+		<div class="imageEditor" id="imageEditor"></div>	
+		<button id="saveData">Сохранить</button>
 	
 	<script type="text/javascript">
 		window.onload = function() {			
@@ -22,7 +21,13 @@
 				var element = document.getElementById("imageEditor");
 				var ratio = "3:4";
 				var editor = new imgEditor(element);
-				editor.appendTo(ratio);				
+				editor.appendTo(ratio);		
+				
+				//для проверки работы метода getData
+				document.getElementById("saveData").onclick = function() {
+					var dd = editor.getData();
+					console.log(dd);
+				}	
 			});
 		};
 	</script>

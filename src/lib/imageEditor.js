@@ -6,6 +6,7 @@ var imgEditor = function(element){
 	var el = element,	
     obj =
     {
+		data: '',
 		selectionX: 0,
 		selectionY: 0,
 		selectionW: 0,
@@ -61,7 +62,7 @@ var imgEditor = function(element){
 			};
 			obj.cancelBtn.onclick = function() {
 				cancelCrop();
-				document.getElementById("editorBtnCancel").style.display = 'none';					
+				obj.cancelBtn.style.display = 'none';					
 				/*imgAS.setOptions({ show : true, x1 : 10, y1 : 10 });
 				imgAS.update();*/
 			};
@@ -70,28 +71,31 @@ var imgEditor = function(element){
 				deleteImg();
 			};
 			obj.cropBtn.onclick = function() {
-				obj.getData();
+				getCrop();
 				imgAS.cancelSelection();
 			};			
 		},
 		getData : function() {
-			if(this.selectionH>1 & this.selectionW>1) {
-				document.getElementById("editorBtnCancel").style.display = 'inline'
-				document.getElementById("editorBtnCrop").style.display = 'none'
-				this.cropZone.width = this.selectionW;
-				this.cropZone.height = this.selectionH;
-									
-				this.ctx = this.cropZone.getContext('2d');					
-				this.ctx.drawImage(this.img,this.selectionX,this.selectionY,this.selectionW,this.selectionH,0,0,this.selectionW,this.selectionH);			
-				var cropData = this.cropZone.toDataURL("image/png");
-				//this.cropZone.style.display = "block";
-				this.previewZone.src = cropData;
-				hideImageZone();
-				showPreviewZone();				
-			}
-			return cropData;
+			return obj.data;
 		}
-    },	
+    },
+	getCrop = function() 
+	{
+		if(obj.selectionH>1 & obj.selectionW>1) {
+			obj.cancelBtn.style.display = 'inline'
+			obj.cropBtn.style.display = 'none'
+			obj.cropZone.width = obj.selectionW;
+			obj.cropZone.height = obj.selectionH;
+								
+			obj.ctx = obj.cropZone.getContext('2d');					
+			obj.ctx.drawImage(obj.img,obj.selectionX,obj.selectionY,obj.selectionW,obj.selectionH,0,0,obj.selectionW,obj.selectionH);			
+			obj.data = obj.cropZone.toDataURL("image/png");
+			//this.cropZone.style.display = "block";
+			obj.previewZone.src = obj.data;
+			hideImageZone();
+			showPreviewZone();				
+		}
+	},	
 	selectFile = function(files) 
 	{		
 		if(window.File && window.FileReader && window.FileList && window.Blob) {
@@ -116,7 +120,7 @@ var imgEditor = function(element){
 	},
 	updateSelection = function(x,y,w,h)
 	{
-		var ind = obj.img.width/document.getElementById("imageEditorImg").width;			
+		var ind = obj.img.width/obj.imageZone.width;			
 		obj.selectionX = parseInt(ind*x);
 		obj.selectionY = parseInt(ind*y);
 		obj.selectionW = parseInt(ind*w);
@@ -124,6 +128,7 @@ var imgEditor = function(element){
 	},
 	cancelCrop = function() 
 	{
+		obj.data = '';
 		obj.selectionX = 0;
 		obj.selectionY = 0;
 		obj.selectionW = 0;
@@ -137,8 +142,8 @@ var imgEditor = function(element){
 		hideDropZone();
 		showControlsZone();
 		obj.img.src = src;
-		document.getElementById("imageEditorImg").src = src;
-		document.getElementById("imageEditorImg").style.display = "block";			
+		obj.imageZone.src = src;
+		obj.imageZone.style.display = "block";			
 	},
 	deleteImg = function() 
 	{
@@ -150,7 +155,8 @@ var imgEditor = function(element){
 		obj.selectionH = 0;
 		obj.ctx = '';
 		obj.imageZone.src = '';
-		obj.previewZone.src = '';			
+		obj.previewZone.src = '';	
+		obj.data = '';	
 		showDropZone();
 		hideImageZone();
 		hideControlsZone();
@@ -183,7 +189,7 @@ var imgEditor = function(element){
 	showControlsZone = function()
 	{
 		obj.controlsZone.style.display = "block";
-		document.getElementById("editorBtnCancel").style.display = 'none';
+		obj.cancelBtn.style.display = 'none';
 	},
 	hideControlsZone = function()
 	{
