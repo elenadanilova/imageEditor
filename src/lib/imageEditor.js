@@ -2,8 +2,8 @@
  * created by e.danilova@playa.ru 01.03.2018
  */
 'use strict';
-var imgEditor = function(element){
-	var el = element,	
+var imgEditor = function(r){
+	var r = r,	
     obj =
     {
 		data: '',
@@ -12,7 +12,7 @@ var imgEditor = function(element){
 		selectionW: 0,
 		selectionH: 0,
 		ctx : '',
-        ratio : 1,
+        ratio : r,
         editorZone : '',
 		controlsZone : '',
 		dropZone : '',
@@ -24,7 +24,7 @@ var imgEditor = function(element){
 		deleteBtn: '',
 		cropBtn: '',
         img : new Image(),
-		appendTo: function(ratio) {
+		appendTo: function(el) {
 			el.innerHTML = "<div id='imageEditorControls' class='imageEditorControls'><button id='editorBtnCrop'>Вырезать</button><button id='editorBtnCancel' style='display:none;'>Отмена</button><button id='editorBtnDelete'>Удалить</button></div><div class='imageEditorDrop' id='imageEditorDrop'><input type='file' name='imageEditorInput' class='imageEditorInput' id='imageEditorInput' accept='image/*'><label for='imageEditorInput' class='imageEditorLabel' id='imageEditorLabel'><span class='editorLabelLink'>Выберите изображение</span> или перетащите сюда</label></div><img id='imageEditorImg' class='imageEditorImg' src=''/><img id='imageEditorPreview' class='imageEditorPreview' src=''/><canvas id='imageEditorCanvas' class='imageEditorCanvas'></canvas>";
 			this.editorZone = document.getElementById('imageEditor');
 			this.controlsZone = document.getElementById('imageEditorControls');
@@ -43,7 +43,7 @@ var imgEditor = function(element){
 			};		
 			var imgAS = $('img#imageEditorImg').imgAreaSelect({
 				handles: true,				
-				aspectRatio: ratio,
+				aspectRatio: obj.ratio,
 				instance: true,
 				
 				onSelectEnd: function (img, selection) {

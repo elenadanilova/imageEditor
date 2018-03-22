@@ -20,8 +20,8 @@
 			$(document).ready(function () {
 				var element = document.getElementById("imageEditor");
 				var ratio = "3:4";
-				var editor = new imgEditor(element);
-				editor.appendTo(ratio);		
+				var editor = new imgEditor(ratio);
+				editor.appendTo(element);		
 				
 				//для проверки работы метода getData
 				document.getElementById("saveData").onclick = function() {
