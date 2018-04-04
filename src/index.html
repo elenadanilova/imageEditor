@@ -19,7 +19,7 @@
 		window.onload = function() {			
 			$(document).ready(function () {
 				var element = document.getElementById("imageEditor");
-				var ratio = "3:4";
+				var ratio = "2:3";
 				var editor = new imgEditor(ratio);
 				editor.appendTo(element);		
 				
@@ -28,6 +28,12 @@
 					var dd = editor.getData();
 					console.log(dd);
 				}	
+				
+				editor.addListener("change", eventF);
+				
+				function eventF() {
+					console.log("event info");
+				}
 			});
 		};
 	</script>

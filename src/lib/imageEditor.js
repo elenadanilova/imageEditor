@@ -6,37 +6,78 @@ var imgEditor = function(r){
     var r = r,
         obj =
             {
-                data: '',
+                elem: '',
+				data: null,
                 selectionX: 0,
                 selectionY: 0,
                 selectionW: 0,
                 selectionH: 0,
                 ctx : '',
                 ratio : r,
+				ratioH : '',
+				ratioW : '',
+				otklonenie: 7,
                 controlsZone : '',
                 cropBtn: '',
                 cancelBtn: '',
                 deleteBtn: '',
                 dropZone : '',
                 inputZone : '',
+                labelZone : '',
                 imageZone : '',
                 previewZone : '',
                 cropZone : '',
+				editorEvent: new Event("change"),
                 img : new Image(),
                 appendTo: function(el) {
-                    createElements()
+					obj.elem = el;
+					initRatio();
+
+                    obj.elem.dispatchEvent(obj.editorEvent);
+
+                    obj.controlsZone = document.createElement('div');
+                    obj.controlsZone.className = "imageEditorControls";
+                    obj.cropBtn = document.createElement('button');
+                    obj.cropBtn.className = "btn btn-sm btn-success";
+                    obj.cropBtn.innerHTML = "Вырезать";
+                    obj.cancelBtn = document.createElement('button');
+                    obj.cancelBtn.className = "btn btn-sm";
+                    obj.cancelBtn.innerHTML = "Отмена";
+                    obj.deleteBtn = document.createElement('button');
+                    obj.deleteBtn.className = "btn btn-sm btn-danger";
+                    obj.deleteBtn.innerHTML = "Удалить <clr-icon shape=\"trash\">";
+                    obj.dropZone = document.createElement('div');
+                    obj.dropZone.className = "imageEditorDrop";
+                    obj.labelZone = document.createElement('label');
+                    obj.labelZone.className = "imageEditorLabel";
+                    obj.labelZone.htmlFor = "imageEditorInput";
+                    obj.labelZone.innerHTML = "<span class='editorLabelLink'>Выберите изображение</span> или перетащите сюда";
+                    obj.inputZone = document.createElement('input');
+                    obj.inputZone.type = "file";
+                    obj.inputZone.name = "imageEditorInput";
+                    obj.inputZone.className = "imageEditorInput";
+                    obj.inputZone.id = "imageEditorInput";
+                    obj.inputZone.accept = "image/*";
+                    obj.imageZone = document.createElement('img');
+                    obj.imageZone.className = "imageEditorImg";
+                    obj.imageZone.id = "imageEditorImg";
+                    obj.previewZone = document.createElement('img');
+                    obj.previewZone.className = "imageEditorPreview";
+                    obj.cropZone = document.createElement('canvas');
+                    obj.cropZone.className = "imageEditorCanvas";
+
                     el.appendChild(this.controlsZone);
+                    this.controlsZone.appendChild(this.deleteBtn);
                     this.controlsZone.appendChild(this.cropBtn);
                     this.controlsZone.appendChild(this.cancelBtn);
-                    this.controlsZone.appendChild(this.deleteBtn);
                     el.appendChild(this.dropZone);
                     this.dropZone.appendChild(this.inputZone);
-                    //this.dropZone.innerHTML += "<label for='imageEditorInput' class='imageEditorLabel' id='imageEditorLabel'><span class='editorLabelLink'>Выберите изображение</span> или перетащите сюда</label>";
+                    this.dropZone.appendChild(this.labelZone);
                     el.appendChild(this.imageZone);
                     el.appendChild(this.previewZone);
                     el.appendChild(this.cropZone);
 
-                    obj.inputZone.onchange = function() {                   
+                    obj.inputZone.onchange = function(event) {
                         selectFile(this.files);
                         imgAS.update();
                     };
@@ -60,8 +101,9 @@ var imgEditor = function(r){
                         selectFile(event.dataTransfer.files);
                     };
                     obj.cancelBtn.onclick = function() {
-                        cancelCrop();
                         obj.cancelBtn.style.display = 'none';
+						cancelCrop();
+						testRatio(obj.img.src);                        
                         //imgAS.setOptions({ show : true, x1 : 10, y1 : 10 });
                         //imgAS.update();
                     };
@@ -74,41 +116,36 @@ var imgEditor = function(r){
                         imgAS.cancelSelection();
                     };
                 },
+				addListener : function(eventName, listenerFunction) {
+				    console.log("run addListener");
+					obj.elem.addEventListener(eventName, listenerFunction, false);
+				},
                 getData : function() {
                     return obj.data;
                 }
             },
-        createElements = function () {
-            obj.controlsZone = document.createElement('div');
-            obj.controlsZone.className = "imageEditorControls";
-            obj.cropBtn = document.createElement('button');
-            obj.cropBtn.className = "btn";
-            obj.cropBtn.innerHTML = "Вырезать";
-            obj.cancelBtn = document.createElement('button');
-            obj.cancelBtn.className = "btn";
-            obj.cancelBtn.innerHTML = "Отмена";
-            obj.deleteBtn = document.createElement('button');
-            obj.deleteBtn.className = "btn";
-            obj.deleteBtn.innerHTML = "Удалить";
-            obj.dropZone = document.createElement('div');
-            obj.dropZone.className = "imageEditorDrop";
-            obj.dropZone.innerHTML = "<label for='imageEditorInput' class='imageEditorLabel' id='imageEditorLabel'><span class='editorLabelLink'>Выберите изображение</span> или перетащите сюда</label>";
-            obj.inputZone = document.createElement('input');
-            obj.inputZone.type = "file";
-            obj.inputZone.name = "imageEditorInput";
-            obj.inputZone.className = "imageEditorInput";
-            obj.inputZone.id = "imageEditorInput";
-            obj.inputZone.accept = "image/*";
-            obj.imageZone = document.createElement('img');
-            obj.imageZone.className = "imageEditorImg";
-            obj.imageZone.id = "imageEditorImg";
-            obj.previewZone = document.createElement('img');
-            obj.previewZone.className = "imageEditorPreview";
-            obj.cropZone = document.createElement('canvas');
-            obj.cropZone.className = "imageEditorCanvas";
-        },
+		initRatio = function() {						
+			obj.ratioH = obj.ratio.split(":")[0];
+			obj.ratioW = obj.ratio.split(":")[1];
+			obj.ratio = obj.ratioW + ":" + obj.ratioH;					
+		},	
+		testRatio = function(src) {
+			var img = new Image();
+			img.onload = function() {
+				var x = parseInt(Math.abs(img.height/img.width - obj.ratioH/obj.ratioW)*100);
+				if (x <= obj.otklonenie) {
+					obj.selectionX = 0;
+					obj.selectionY = 0;
+					obj.selectionW = img.width;
+					obj.selectionH = img.height;					
+				}
+			}
+			img.src = src;
+		},	
         getCrop = function()
         {
+			obj.elem.dispatchEvent(obj.editorEvent);
+
             if(obj.selectionH>1 & obj.selectionW>1) {
                 obj.cancelBtn.style.display = 'inline'
                 obj.cropBtn.style.display = 'none'
@@ -117,9 +154,10 @@ var imgEditor = function(r){
 
                 obj.ctx = obj.cropZone.getContext('2d');
                 obj.ctx.drawImage(obj.img,obj.selectionX,obj.selectionY,obj.selectionW,obj.selectionH,0,0,obj.selectionW,obj.selectionH);
-                obj.data = obj.cropZone.toDataURL("image/png");
-                //this.cropZone.style.display = "block";
-                obj.previewZone.src = obj.data;
+                obj.cropZone.toBlob(function (blob) {
+                    obj.data = blob
+                });
+                obj.previewZone.src = obj.cropZone.toDataURL("image/png");
                 hideImageZone();
                 showPreviewZone();
             }
@@ -137,6 +175,7 @@ var imgEditor = function(r){
                     var reader = new FileReader();
                     reader.onload = function(file) {
                         initImg(file.target.result);
+						testRatio(file.target.result);
                     }
                     reader.readAsDataURL(file);
 
@@ -156,7 +195,9 @@ var imgEditor = function(r){
         },
         cancelCrop = function()
         {
-            obj.data = '';
+			obj.elem.dispatchEvent(obj.editorEvent);
+
+            obj.data = null;
             obj.selectionX = 0;
             obj.selectionY = 0;
             obj.selectionW = 0;
@@ -167,14 +208,20 @@ var imgEditor = function(r){
         },
         initImg = function(src)
         {
+			obj.elem.dispatchEvent(obj.editorEvent);
+
             hideDropZone();
             showControlsZone();
             obj.img.src = src;
-            obj.imageZone.src = src;
-            obj.imageZone.style.display = "block";
+			obj.img.onload = function() {
+				obj.imageZone.src = src;
+				obj.imageZone.style.display = "block";
+			}			
         },
         deleteImg = function()
         {
+			obj.elem.dispatchEvent(obj.editorEvent);
+
             obj.cropBtn.style.display = 'inline'
             obj.img = new Image();
             obj.selectionX = 0;
@@ -184,7 +231,7 @@ var imgEditor = function(r){
             obj.ctx = '';
             obj.imageZone.src = '';
             obj.previewZone.src = '';
-            obj.data = '';
+            obj.data = null;
             showDropZone();
             hideImageZone();
             hideControlsZone();
