@@ -12,8 +12,8 @@
 <body>
 	<script src="lib/imageEditor.js"></script>
 		
-		<div class="imageEditor" id="imageEditor"></div>	
-		<button id="saveData">Сохранить</button>
+		<div class="imageEditor" id="imageEditor"><button id="saveData">Сохранить</button></div>	
+		
 	
 	<script type="text/javascript">
 		window.onload = function() {			
@@ -29,7 +29,7 @@
 					console.log(dd);
 				}	
 				
-				editor.addListener("change", eventF);
+				editor.addListener("changeEditor", eventF);
 				
 				function eventF() {
 					console.log("event info");

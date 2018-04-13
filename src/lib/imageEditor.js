@@ -8,6 +8,7 @@ var imgEditor = function(r){
             {
                 elem: '',
 				data: null,
+				errorStatus: 'Изображение не выбрано',
                 selectionX: 0,
                 selectionY: 0,
                 selectionW: 0,
@@ -16,7 +17,8 @@ var imgEditor = function(r){
                 ratio : r,
 				ratioH : '',
 				ratioW : '',
-				otklonenie: 7,
+				otklonenie: 10,
+				maxSize: 100000,
                 controlsZone : '',
                 cropBtn: '',
                 cancelBtn: '',
@@ -30,106 +32,122 @@ var imgEditor = function(r){
 				editorEvent: new Event("change"),
                 img : new Image(),
                 appendTo: function(el) {
-					obj.elem = el;
+					this.elem = el;
 					initRatio();
 
-                    obj.elem.dispatchEvent(obj.editorEvent);
+                    this.elem.dispatchEvent(this.editorEvent);
 
-                    obj.controlsZone = document.createElement('div');
-                    obj.controlsZone.className = "imageEditorControls";
-                    obj.cropBtn = document.createElement('button');
-                    obj.cropBtn.className = "btn btn-sm btn-success";
-                    obj.cropBtn.innerHTML = "Вырезать";
-                    obj.cancelBtn = document.createElement('button');
-                    obj.cancelBtn.className = "btn btn-sm";
-                    obj.cancelBtn.innerHTML = "Отмена";
-                    obj.deleteBtn = document.createElement('button');
-                    obj.deleteBtn.className = "btn btn-sm btn-danger";
-                    obj.deleteBtn.innerHTML = "Удалить <clr-icon shape=\"trash\">";
-                    obj.dropZone = document.createElement('div');
-                    obj.dropZone.className = "imageEditorDrop";
-                    obj.labelZone = document.createElement('label');
-                    obj.labelZone.className = "imageEditorLabel";
-                    obj.labelZone.htmlFor = "imageEditorInput";
-                    obj.labelZone.innerHTML = "<span class='editorLabelLink'>Выберите изображение</span> или перетащите сюда";
-                    obj.inputZone = document.createElement('input');
-                    obj.inputZone.type = "file";
-                    obj.inputZone.name = "imageEditorInput";
-                    obj.inputZone.className = "imageEditorInput";
-                    obj.inputZone.id = "imageEditorInput";
-                    obj.inputZone.accept = "image/*";
-                    obj.imageZone = document.createElement('img');
-                    obj.imageZone.className = "imageEditorImg";
-                    obj.imageZone.id = "imageEditorImg";
-                    obj.previewZone = document.createElement('img');
-                    obj.previewZone.className = "imageEditorPreview";
-                    obj.cropZone = document.createElement('canvas');
-                    obj.cropZone.className = "imageEditorCanvas";
-
-                    el.appendChild(this.controlsZone);
+                    this.controlsZone = document.createElement('div');
+                    this.controlsZone.className = "imageEditorControls";
+                    this.cropBtn = document.createElement('button');
+                    this.cropBtn.className = "btn btn-sm btn-success";
+                    this.cropBtn.innerHTML = "Вырезать";
+                    this.cancelBtn = document.createElement('button');
+                    this.cancelBtn.className = "btn btn-sm";
+                    this.cancelBtn.innerHTML = "Отмена";
+                    this.deleteBtn = document.createElement('button');
+                    this.deleteBtn.className = "btn btn-sm btn-danger";
+                    this.deleteBtn.innerHTML = "Удалить <clr-icon shape=\"trash\">";
+                    this.dropZone = document.createElement('div');
+                    this.dropZone.className = "imageEditorDrop";
+                    this.labelZone = document.createElement('label');
+                    this.labelZone.className = "imageEditorLabel";
+                    this.labelZone.htmlFor = "imageEditorInput";
+                    this.labelZone.innerHTML = "<span class='editorLabelLink'>Выберите изображение</span> или перетащите сюда";
+                    this.inputZone = document.createElement('input');
+                    this.inputZone.type = "file";
+                    this.inputZone.name = "imageEditorInput";
+                    this.inputZone.className = "imageEditorInput";
+                    this.inputZone.id = "imageEditorInput";
+                    this.inputZone.accept = "image/*";
+					this.inputZone.addEventListener("change",this.lolog,false);
+                    this.imageZone = document.createElement('img');
+                    this.imageZone.className = "imageEditorImg";
+                    this.imageZone.id = "imageEditorImg";
+                    this.previewZone = document.createElement('img');
+                    this.previewZone.className = "imageEditorPreview";
+                    this.cropZone = document.createElement('canvas');
+                    this.cropZone.className = "imageEditorCanvas";
+                    
                     this.controlsZone.appendChild(this.deleteBtn);
                     this.controlsZone.appendChild(this.cropBtn);
                     this.controlsZone.appendChild(this.cancelBtn);
-                    el.appendChild(this.dropZone);
-                    this.dropZone.appendChild(this.inputZone);
+                    this.dropZone.appendChild(this.inputZone);					
                     this.dropZone.appendChild(this.labelZone);
+					el.appendChild(this.controlsZone);
+					el.appendChild(this.dropZone);
                     el.appendChild(this.imageZone);
                     el.appendChild(this.previewZone);
                     el.appendChild(this.cropZone);
 
-                    obj.inputZone.onchange = function(event) {
+                    this.inputZone.onchange = function() {
+						console.log("input change");
                         selectFile(this.files);
                         imgAS.update();
                     };
-                    var imgAS = $(obj.imageZone).imgAreaSelect({
+                    var imgAS = $(this.imageZone).imgAreaSelect({
                         handles: true,
-                        aspectRatio: obj.ratio,
+                        aspectRatio: this.ratio,
                         instance: true,
 
                         onSelectEnd: function (img, selection) {
                             updateSelection(selection.x1, selection.y1, selection.width, selection.height);
                         }
                     });
-                    obj.dropZone.ondragover = function(event) {
+                    this.dropZone.ondragover = function(event) {
                         event.preventDefault();
                         event.stopPropagation();
                         event.dataTransfer.dropEffect = 'copy';
                     };
-                    obj.dropZone.ondrop = function(event) {
+                    this.dropZone.ondrop = function(event) {
                         event.preventDefault();
                         event.stopPropagation();
                         selectFile(event.dataTransfer.files);
                     };
-                    obj.cancelBtn.onclick = function() {
-                        obj.cancelBtn.style.display = 'none';
+					this.dropZone.onclick = function() {
+						console.log("lena");
+					}
+                    this.cancelBtn.onclick = function() {
+                        console.log("cancelBtn");
+                        this.cancelBtn.style.display = 'none';
 						cancelCrop();
-						testRatio(obj.img.src);                        
-                        //imgAS.setOptions({ show : true, x1 : 10, y1 : 10 });
-                        //imgAS.update();
+						this.errorStatus = "Не выбрана область изображения";
+						testRatio(this.img.src);
                     };
-                    obj.deleteBtn.onclick = function() {
+                    this.deleteBtn.onclick = function() {
+                        console.log("deleteBtn");
                         imgAS.cancelSelection();
                         deleteImg();
+                        this.errorStatus = "Изображение не выбрано";
                     };
-                    obj.cropBtn.onclick = function() {
+                    this.cropBtn.onclick = function() {
+                        console.log("cropBtn");
                         getCrop();
                         imgAS.cancelSelection();
                     };
                 },
+				lolog : function() {console.log("123");},
 				addListener : function(eventName, listenerFunction) {
-				    console.log("run addListener");
-					obj.elem.addEventListener(eventName, listenerFunction, false);
+				    console.log("addListener");
+					this.elem.addEventListener(eventName, listenerFunction, false);
 				},
                 getData : function() {
-                    return obj.data;
+                    console.log("getData");
+                    return this.data;
+                },
+                getErrorStatus : function() {
+                    console.log("getErrorStatus");
+                    return this.errorStatus;
                 }
             },
-		initRatio = function() {						
+		initRatio = function() {
+		    console.log("initRatio");
 			obj.ratioH = obj.ratio.split(":")[0];
 			obj.ratioW = obj.ratio.split(":")[1];
-			obj.ratio = obj.ratioW + ":" + obj.ratioH;					
-		},	
+			obj.ratio = obj.ratioW + ":" + obj.ratioH;
+		},
 		testRatio = function(src) {
+		    console.log("testRatio");
 			var img = new Image();
 			img.onload = function() {
 				var x = parseInt(Math.abs(img.height/img.width - obj.ratioH/obj.ratioW)*100);
@@ -137,15 +155,25 @@ var imgEditor = function(r){
 					obj.selectionX = 0;
 					obj.selectionY = 0;
 					obj.selectionW = img.width;
-					obj.selectionH = img.height;					
+					obj.selectionH = img.height;
+
+                    obj.cropZone.width = obj.selectionW;
+                    obj.cropZone.height = obj.selectionH;
+
+                    obj.ctx = obj.cropZone.getContext('2d');
+                    obj.ctx.drawImage(img,obj.selectionX,obj.selectionY,obj.selectionW,obj.selectionH,0,0,obj.selectionW,obj.selectionH);
+                    obj.cropZone.toBlob(function (blob) {
+                        obj.data = blob
+                    });
+                    obj.previewZone.src = obj.cropZone.toDataURL("image/png");
+                    obj.elem.dispatchEvent(obj.editorEvent);
 				}
 			}
 			img.src = src;
-		},	
+		},
         getCrop = function()
         {
-			obj.elem.dispatchEvent(obj.editorEvent);
-
+            console.log("getCrop");
             if(obj.selectionH>1 & obj.selectionW>1) {
                 obj.cancelBtn.style.display = 'inline'
                 obj.cropBtn.style.display = 'none'
@@ -160,10 +188,13 @@ var imgEditor = function(r){
                 obj.previewZone.src = obj.cropZone.toDataURL("image/png");
                 hideImageZone();
                 showPreviewZone();
+                obj.errorStatus = null;
             }
+            obj.elem.dispatchEvent(obj.editorEvent);
         },
         selectFile = function(files)
         {
+            console.log("selectFile");
             if(window.File && window.FileReader && window.FileList && window.Blob) {
                 var file;
 
@@ -172,12 +203,17 @@ var imgEditor = function(r){
                         continue;
                     }
 
-                    var reader = new FileReader();
-                    reader.onload = function(file) {
-                        initImg(file.target.result);
-						testRatio(file.target.result);
+                    if(file.size < obj.maxSize) {
+                        var reader = new FileReader();
+                        reader.onload = function(file) {
+                            initImg(file.target.result);
+                            testRatio(file.target.result);
+                            obj.errorStatus = "Не выбрана область изображения";
+                        }
+                        reader.readAsDataURL(file);
+                    }else {
+                        console.log("Слишком большой файл");
                     }
-                    reader.readAsDataURL(file);
 
                     if (file.type.match('image.*')) {
                         break;
@@ -187,6 +223,7 @@ var imgEditor = function(r){
         },
         updateSelection = function(x,y,w,h)
         {
+            console.log("updateSelection");
             var ind = obj.img.width/obj.imageZone.width;
             obj.selectionX = parseInt(ind*x);
             obj.selectionY = parseInt(ind*y);
@@ -195,6 +232,7 @@ var imgEditor = function(r){
         },
         cancelCrop = function()
         {
+            console.log("cancelCrop");
 			obj.elem.dispatchEvent(obj.editorEvent);
 
             obj.data = null;
@@ -208,6 +246,7 @@ var imgEditor = function(r){
         },
         initImg = function(src)
         {
+            console.log("initImg");
 			obj.elem.dispatchEvent(obj.editorEvent);
 
             hideDropZone();
@@ -216,10 +255,11 @@ var imgEditor = function(r){
 			obj.img.onload = function() {
 				obj.imageZone.src = src;
 				obj.imageZone.style.display = "block";
-			}			
+			}
         },
         deleteImg = function()
         {
+            console.log("deleteImg");
 			obj.elem.dispatchEvent(obj.editorEvent);
 
             obj.cropBtn.style.display = 'inline'
