@@ -1,42 +1,39 @@
 <!DOCTYPE html>
 <html>
-<head lang="en">
+  <head lang="en">
     <meta charset="UTF-8">
     <title>Image Editor</title>
     <link rel="stylesheet" href="lib/imageEditor.css" type="text/css" />
-
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="imageEditor" id="imageEditor">
+      <button id="saveData">Сохранить</button>
+    </div>
 
-	
-</head>
-<body>
-	<script src="lib/imageEditor.js"></script>
-		
-		<div class="imageEditor" id="imageEditor"><button id="saveData">Сохранить</button></div>	
-		
-	
-	<script type="text/javascript">
-		window.onload = function() {			
-			$(document).ready(function () {
-				var element = document.getElementById("imageEditor");
-				var ratio = "2:3";
-				var editor = new imgEditor(ratio);
-				editor.appendTo(element);		
-				
-				//для проверки работы метода getData
-				document.getElementById("saveData").onclick = function() {
-					var dd = editor.getData();
-					console.log(dd);
-				}	
-				
-				editor.addListener("changeEditor", eventF);
-				
-				function eventF() {
-					console.log("event info");
-				}
-			});
-		};
-	</script>
+    <script src="lib/imageEditor.js"></script>
 
-</body>
+    <script type="text/javascript">
+      window.onload = function() {
+        $(document).ready(function () {
+          var element = document.getElementById("imageEditor");
+          var ratio = "2:3";
+          var editor = new imgEditor(ratio);
+          editor.appendTo(element);
+
+          //для проверки работы метода getData
+          document.getElementById("saveData").onclick = function() {
+            var dd = editor.getData();
+            console.log(dd);
+          }
+
+          editor.addListener("changeEditor", eventF);
+
+          function eventF() {
+            console.log("event info");
+          }
+        });
+      };
+    </script>
+  </body>
 </html>
